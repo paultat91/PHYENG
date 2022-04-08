@@ -38,11 +38,13 @@ while running:
         if event.type == py.MOUSEBUTTONDOWN:
             pos = pygame_to_box(py.mouse.get_pos(), phy.SCREEN_HEIGHT)
             
-            make_body(phy, (5,5), friction=0, shape=b2.circleShape, restitution=1, type=b2.dynamicBody)
-            make_body(phy, (6,6), friction=0, shape=b2.circleShape, restitution=1, type=b2.dynamicBody)
+            make_body(phy, (10,20), friction=0, shape=b2.polygonShape, restitution=1, type=b2.dynamicBody)
+            make_body(phy, (15,10), friction=0, shape=b2.polygonShape, restitution=1, type=b2.dynamicBody)
 
-            make_distance_joint(phy, phy.world.bodies[-1], phy.world.bodies[-2], phy.world.bodies[-1].position, phy.world.bodies[-2].position)
-    
+            #make_distance_joint(phy, phy.world.bodies[-1], phy.world.bodies[-2], phy.world.bodies[-1].position, phy.world.bodies[-2].position)
+            make_revolute_joint(phy, phy.world.bodies[-1], phy.world.bodies[-2])
+            #make_pulley_joint(phy, phy.world.bodies[-1], phy.world.bodies[-2], b2.vec2(15,5), b2.vec2(25,5))
+
     if keystate_0[py.K_LEFT]:
         phy.world.bodies[-1].ApplyLinearImpulse((-5,0),phy.world.bodies[-1].position,  True)
                    

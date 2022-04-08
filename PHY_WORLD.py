@@ -74,55 +74,7 @@ class WORLD():
                 position=(0,self.SCREEN_HEIGHT/self.PPM+x1),
                 shapes=b2.polygonShape(box=ground_size),
             ) 
-# def WORLD(SCREEN_DIMS=(1000,600), FPS=60, PPM=20, g=9.81,
-#          GAME_NAME="NO_NAME", ground=True, ground_size=(50,1), hard_walls=True):
-#     SCREEN_WIDTH = SCREEN_DIMS[0]
-#     SCREEN_HEIGHT = SCREEN_DIMS[1]
-#     TIME_STEP = 1.0 / FPS
-    
-    
-#     # --- pygame setup ---
-#     screen = py.display.set_mode((SCREEN_WIDTH, 
-#                                        SCREEN_HEIGHT), 0, 32)
-#     py.display.set_caption(GAME_NAME)
-#     clock = py.time.Clock()
-    
-#     clock = py.time.Clock()
-#     world = b2.world(gravity=(0, -g), doSleep=True)
-#     colors = {
-#         b2.staticBody: (255, 255, 255, 255),
-#         b2.dynamicBody: (127, 127, 127, 255),
-#         b2.kinematicBody: (0, 0, 255, 255),
-        
-#     } 
-#     b2BodyDef = b2.bodyDef
-#     b2FixtureDef = b2.fixtureDef
-#     b2JointDef = b2.jointDef
-    
-#     if ground:
-#         # And a static body to hold the ground shape
-#         ground_body = world.CreateStaticBody(
-#             position=(0,0),
-#             shapes=b2.polygonShape(box=ground_size),
-#         )
-    
-#     if hard_walls:
-#         # make hard walls
-#         left_wall_body = world.CreateStaticBody(
-#             position=(0,0),
-#             shapes=b2.polygonShape(box=(1,SCREEN_HEIGHT/PPM)),
-#         )            
-    
-#         right_wall_body = world.CreateStaticBody(
-#             position=(SCREEN_WIDTH/PPM,0),
-#             shapes=b2.polygonShape(box=(1,SCREEN_HEIGHT/PPM)),
-#         )  
-    
-#         ceiling_body = world.CreateStaticBody(
-#             position=(0,SCREEN_HEIGHT/PPM),
-#             shapes=b2.polygonShape(box=ground_size),
-#         )  
-#     return world, screen
+
     
 def make_distance_joint(w, myBody1, myBody2, 
                         worldAnchorOnBody1, worldAnchorOnBody2):
@@ -140,19 +92,53 @@ def make_distance_joint(w, myBody1, myBody2,
     # joint_def.type = 3 #b2.distanceJoint
     # joint = w.world.CreateJoint(joint_def)
     
-
     
     joint = w.world.CreateDistanceJoint(bodyA=myBody1,
      	bodyB=myBody2,
      	anchorA=worldAnchorOnBody1,
      	anchorB=worldAnchorOnBody2,
-     	collideConnected=True, dampingRatio=0, frequencyHz=0, length=b2.vec2(1,1).length)
-
-    # joint = w.world.CreateRevoluteJoint(
-    #     bodyA=myBody1,
-    #     bodyB=myBody2,
-    #     anchor=myBody1.worldCenter)    
+     	collideConnected=True, dampingRatio=0, frequencyHz=0)
+  
     return joint
+
+def make_revolute_joint(w, myBody1, myBody2):
+    # joint = w.world.CreateRevoluteJoint(
+    # bodyA=myBody1, 
+    # bodyB=myBody2, 
+    # anchor=myBody1.worldCenter,
+    # lowerAngle = -0.5 ** 3.1415, #b2_pi, # -90 degrees
+    # upperAngle = 0.25 ** 3.1415, #b2_pi, #  45 degrees
+    # enableLimit = True,
+    # maxMotorTorque = 10.0,
+    # motorSpeed = 0.0,
+    # enableMotor = True,
+    # )
+    joint = w.world.CreateRevoluteJoint(
+        bodyA=myBody1,
+        bodyB=myBody2,
+        anchor=myBody1.worldCenter)  
+    return joint
+
+def make_pulley_joint(w, myBody1, myBody2, p1, p2):
+    joint = w.world.CreatePulleyJoint(
+        bodyA=myBody1, 
+        bodyB=myBody2, 
+        groundAnchorA=myBody1.worldCenter,
+        groundAnchorB=myBody2.worldCenter,
+        anchorA=(p1.x, p1.y + 10.0),
+        anchorB=(p2.x, p2.y + 12.0),
+        ratio=1.0,
+    )
+    return joint
+
+# def make_distance_joint(w, **kwargs):
+#     """
+#     Create a single b2DistanceJoint. Only accepts kwargs to the joint definition.
+#     Raises ValueError if either bodyA or bodyB is left unset.
+#     """
+#     if 'bodyA' not in kwargs or 'bodyB' not in kwargs:
+#         raise ValueError('Requires at least bodyA and bodyB be set')
+#     return w.world.CreateJoint(w.b2JointDef(**kwargs))
     
 def make_body(w, pos, vel=(0,0), angle=0, ang_vel=0, density=1, friction=0.3, 
              restitution=0, shape=b2.polygonShape, radius=0.5,
